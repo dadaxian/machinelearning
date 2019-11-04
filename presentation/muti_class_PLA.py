@@ -9,25 +9,35 @@ data= np.loadtxt(path+"iris_x.dat")
 value= np.loadtxt(path+"iris_y.dat")
 
 
-# 计算正确率（未使用）
-def checkTrueRate(testMatData, testLabelData, W):
+# 计算损失率（未使用）
+def checkLoss(testMatData, testLabelData, W):
+    accuracyCount = 0
+    for index,item in enumerate(testMatData):
+        for indexw in range(0,3):
+            if(indexw==testLabelData[index]):
+                result=np.dot(item,W[indexw])
+                if(result<0):accuracyCount+=1
+    return accuracyCount
+
+# 计算损失率（未使用）
+def checkNotTrueRate(testMatData, testLabelData, W):
     accuracyCount = 0
     for index,item in enumerate(testMatData):
         for indexw in range(0,3):
             result=np.dot(item,W[indexw])
-            if(result<0 and indexw!=testLabelData[index]):accuracyCount+=1
-            if(result>0 and indexw==testLabelData[index]):accuracyCount+=1
+            if(result<=0 and indexw==testLabelData[index]):accuracyCount+=1
+            if(result>0 and indexw!=testLabelData[index]):accuracyCount+=1
     return accuracyCount
 
 # 计算损失
-def chechLoss(testMatData,testLabelData,W):
+def cost(testMatData,testLabelData,W):
     loss = 0
     for index,item in enumerate(testMatData):
         for indexw in range(0,3):
             result=np.dot(item,W[indexw])
-            if(result<0 and indexw==testLabelData[index]):loss+=result
+            if(result<=0 and indexw==testLabelData[index]):loss+=-result
             if(result>0 and indexw!=testLabelData[index]):loss+=result
-    return loss
+    return np.mean(loss)
 
 # 计算单个超平面正确率
 def checkSingleTrueRate(testMatData, testLabelData, w,indexw):
@@ -37,6 +47,18 @@ def checkSingleTrueRate(testMatData, testLabelData, w,indexw):
         if(result<0 and indexw!=testLabelData[index]):accuracyCount+=1
         if(result>0 and indexw==testLabelData[index]):accuracyCount+=1
     return accuracyCount
+
+    return 1 / (1 + np.exp(-x))
+
+# # 计算损失
+# def cost(testMatData, testLabelData, W):
+#     costSum=0
+#     for index,item in enumerate(testMatData):
+#         for indexw in range(0,3):
+#             result=np.dot(item,W[indexw])
+#             if(result<0 and indexw==testLabelData[index]):loss+=result
+#             if(result>0 and indexw!=testLabelData[index]):loss+=result
+#     return costSum
 
 # 归一化数据
 def normalizefeature(data):
@@ -71,6 +93,7 @@ def mscatter(x,y,ax=None, m=None, **kw):
                         marker_obj.get_transform())
             paths.append(path)
         sc.set_paths(paths)
+    ax.legend()
     return sc
 
 # 查找对于单个data的最大距离超平面
@@ -83,6 +106,7 @@ def maxJBywx(W,data):
             maxValue=np.dot(item,data)
     return maxIndex
 
+
 # 初始化权值数组
 W=[(0,0,0),(0,0,0),(0,0,0)]
 # 最优权值组
@@ -92,7 +116,6 @@ bestClassifyCount=[0,0,0]
 # 数据预处理
 data,value=shuffleData(data,value)
 data=normalizefeature(data)
-
 # 添加偏置参数
 data=np.insert(data,2,values=1,axis=1)
 
@@ -102,27 +125,20 @@ data=np.insert(data,2,values=1,axis=1)
 # 圆形 星星 正三角
 marker={0:'o',1:'*',2:'^'}
 cmarker=list(map(lambda x:marker[x],value))
+ 
 # 生成子图
 # fig, ax = plt.subplots()
 # 创建图像布局对象fig
 fig = plt.figure(figsize = (12, 6))
+# 添加总标题，并设置文字大小
+plt.suptitle("muti_class_PLA", fontsize=20) 
 ax1=fig.add_subplot(122)
+ax1.set_xlabel('epoch')
+ax1.set_ylabel('BadPointCount')
+
  # 初始线的数据
 x = np.linspace(-5,5)
-ax1.plot(x, x)
-y0 = (-bestW[0][0] * x- bestW[0][2])/(bestW[0][1])
-y1 = (-bestW[1][0] * x- bestW[1][2])/(bestW[1][1])
-y2 = (-bestW[2][0] * x- bestW[2][2])/(bestW[2][1])
 ax=fig.add_subplot(121)
-# 圆
-c=ax.plot(x ,y0,color='red',label='0 circle')
-# 星
-s=ax.plot(x ,y1,color='blue',label='1 star')
-# 三角
-t=ax.plot(x ,y2,color='black',label='2 triangle')
-# 图例标注
-plt.legend([c,s,t],['0 circle','1 star','2 triangle'])
-# 坐标轴范围
 plt.xlim((-5,5))
 plt.ylim((-2,2))
 # 最终设置
@@ -130,23 +146,31 @@ plt.grid(True)
 scatter = mscatter(data[:,0], data[:,1],c='', m=cmarker, ax=ax,cmap=plt.cm.RdYlBu,edgecolors='k')
 # 关闭阻塞模式，打开交互模式
 plt.ion() 
+plt.show()
 
 # 学习参数设置 
 # 学习率
 a=0.1
 # 学习轮数
-epoch=2
+epochs=10
+epoch=1
+costs=[]
+costs.append(checkNotTrueRate(data,value,bestW))
+ax1.plot(np.arange(epoch), costs, 'r-')
 
-while(epoch>0):
+while(epoch<epochs+1):
+    # 数据预处理
+    data,value=shuffleData(data,value)
+    # 添加偏置参数
+    data=np.insert(data,2,values=1,axis=1)
     print("epoch:%2d"%epoch)
-    epoch-=1
+    epoch+=1
     for k,input_vector in enumerate(data):
         ck=maxJBywx(W,input_vector)
         # 对每个权重向量更新
         for j in range(0,3):
             if(j==ck and j!=value[k]):
                 W[j]=W[j]-a*input_vector
-                
             elif(j==value[k] and j!=ck):
                 W[j]=W[j]+a*input_vector
             # 获取当前效果（正确分类个数）
@@ -156,30 +180,37 @@ while(epoch>0):
                 bestClassifyCount[j]=np.copy(currentRate)
                 bestW[j]=np.copy(W[j])
 
-
+    costs.append(checkNotTrueRate(data,value,bestW))
+    ax1.plot(np.arange(epoch), costs, 'r-')
+    
+    
     # 更新超平面
     try:
-        for i in range(3):
-            ax.lines.remove(ax.lines[i])
+        while len(ax.lines)>0:
+            ax.lines.remove(ax.lines[0])
     except Exception:
         pass
     y0 = (-bestW[0][0] * x- bestW[0][2])/(bestW[0][1])
     y1 = (-bestW[1][0] * x- bestW[1][2])/(bestW[1][1])
     y2 = (-bestW[2][0] * x- bestW[2][2])/(bestW[2][1])
     # 圆
-    ax.plot(x ,y0,color='red',label='0 circle')
+    ax.plot(x ,y0,color='green',label='0 circle')
     # 星
-    ax.plot(x ,y1,color='blue',label='1 star')
+    ax.plot(x ,y1,color='black',label='1 star')
     # 三角
-    ax.plot(x ,y2,color='black',label='2 triangle')
+    ax.plot(x ,y2,color='blue',label='2 triangle')
+    plt.legend()
     plt.pause(0.1)
 
 # 最终处理,区域填充
 try:
-    for i in range(3):
-        ax.lines.clear()
+    while len(ax.lines)>0:
+        ax.lines.remove(ax.lines[0])
 except Exception:
     pass
+
+
+
 # 取到表现最差的超平面,除去他
 badIndex=0
 minWrongHypLine1=checkSingleTrueRate(data,value,bestW[0],0)
@@ -191,7 +222,6 @@ minWrongHypLine3=checkSingleTrueRate(data,value,bestW[2],2)
 if(minWrongHypLine3<minWrongHypLine1):
     minWrongHypLine1=minWrongHypLine3
     badIndex=2
-print(badIndex)
 resultWeight=[]
 for index,item in enumerate(bestW):
     if(index==badIndex):continue
@@ -201,10 +231,9 @@ y0 = (-resultWeight[0][0] * x- resultWeight[0][2])/(resultWeight[0][1])
 y1 = (-resultWeight[1][0] * x- resultWeight[1][2])/(resultWeight[1][1])
 y11=10000
 y22=-10000
-ax.fill_between(x,y0,where=(y0<y11),facecolor='b',alpha=0.3)
-ax.fill_between(x,y1,where=(y0>y22),facecolor='g',alpha=0.3)
+ax.fill_between(x,y0,y11,facecolor='b',alpha=0.3)
+ax.fill_between(x,y1,y22,facecolor='g',alpha=0.3)
 ax.fill_between(x,y0,y1,facecolor='k',alpha=0.3)
-
 
 # 显示前关掉交互模式
 plt.ioff()
