@@ -120,7 +120,7 @@ fig = plt.figure(figsize = (12, 6))
  # 初始线的数据
 x = np.linspace(-5,5)
 # 添加总标题，并设置文字大小
-plt.suptitle("muti_class_PLA_2Class", fontsize=20) 
+plt.suptitle("multi_class_PLA_2Class", fontsize=20) 
 ax=fig.add_subplot(121)
 # 坐标轴范围
 plt.xlim((-3,3))

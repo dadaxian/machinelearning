@@ -1,7 +1,6 @@
 #coding=utf-8
 import numpy as np
 import matplotlib.pyplot as plt
-import numpy as np
 
 
 path="D:\\fallingspace\\perceptron\\data\\Iris\\"
@@ -19,7 +18,7 @@ def checkLoss(testMatData, testLabelData, W):
                 if(result<0):accuracyCount+=1
     return accuracyCount
 
-# 计算损失率（未使用）
+# 计算损失率
 def checkNotTrueRate(testMatData, testLabelData, W):
     accuracyCount = 0
     for index,item in enumerate(testMatData):
@@ -29,7 +28,7 @@ def checkNotTrueRate(testMatData, testLabelData, W):
             if(result>0 and indexw!=testLabelData[index]):accuracyCount+=1
     return accuracyCount
 
-# 计算损失
+# 计算损失（未使用）
 def cost(testMatData,testLabelData,W):
     loss = 0
     for index,item in enumerate(testMatData):
@@ -49,16 +48,6 @@ def checkSingleTrueRate(testMatData, testLabelData, w,indexw):
     return accuracyCount
 
     return 1 / (1 + np.exp(-x))
-
-# # 计算损失
-# def cost(testMatData, testLabelData, W):
-#     costSum=0
-#     for index,item in enumerate(testMatData):
-#         for indexw in range(0,3):
-#             result=np.dot(item,W[indexw])
-#             if(result<0 and indexw==testLabelData[index]):loss+=result
-#             if(result>0 and indexw!=testLabelData[index]):loss+=result
-#     return costSum
 
 # 归一化数据
 def normalizefeature(data):
@@ -125,17 +114,15 @@ data=np.insert(data,2,values=1,axis=1)
 # 圆形 星星 正三角
 marker={0:'o',1:'*',2:'^'}
 cmarker=list(map(lambda x:marker[x],value))
- 
 # 生成子图
 # fig, ax = plt.subplots()
 # 创建图像布局对象fig
 fig = plt.figure(figsize = (12, 6))
 # 添加总标题，并设置文字大小
-plt.suptitle("muti_class_PLA", fontsize=20) 
+plt.suptitle("multi_class_PLA", fontsize=20) 
 ax1=fig.add_subplot(122)
 ax1.set_xlabel('epoch')
 ax1.set_ylabel('BadPointCount')
-
  # 初始线的数据
 x = np.linspace(-5,5)
 ax=fig.add_subplot(121)
