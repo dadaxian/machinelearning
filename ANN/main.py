@@ -9,6 +9,10 @@ data= np.loadtxt(path+"ex4x.dat")
 value= np.loadtxt(path+"ex4y.dat")
 
 
+# sigmoid函数
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
 # 计算正确率（未使用）
 def checkTrueRate(testMatData, testLabelData, W):
     accuracyCount = 0
@@ -83,18 +87,13 @@ def mscatter(x,y,ax=None, m=None, **kw):
         sc.set_paths(paths)
     return sc
 
-# 查找对于单个data的最大距离超平面
-def maxJBywx(W,data):
-    maxIndex=0
-    maxValue=np.dot(W[0],data)
-    for ind,item in enumerate(W):
-        if maxValue < np.dot(item,data):
-            maxIndex=ind
-            maxValue=np.dot(item,data)
-    return maxIndex
+
+
+
 
 # 初始化权值数组
-W=[(0,0,0),(0,0,0)]
+W=[(0.5,0.5,0.5),(0.5,0.5,0.5)]
+V=[(0.5,0.5,0.5),(0.5,0.5,0.5),(0.5,0.5,0.5)]
 # 最优权值组
 bestW=[(0,0,0),(0,0,0)]
 # 最优正确分类数
@@ -140,9 +139,13 @@ a=0.1
 # 学习轮数
 epochs=5
 epoch=1
-costs=[]
-costs.append(checkNotTrueRate(data,value,bestW))
-ax1.plot(np.arange(epoch), costs, 'r-')
+
+while(epoch<epochs+1):
+    
+
+# costs=[]
+# costs.append(checkNotTrueRate(data,value,bestW))
+# ax1.plot(np.arange(epoch), costs, 'r-')
 
 # while(epoch<epochs+1):
 #     # 数据预处理
