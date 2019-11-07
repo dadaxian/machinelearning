@@ -20,13 +20,13 @@ def checkLoss(testMatData, testLabelData, W):
 
 # 计算损失率
 def checkNotTrueRate(testMatData, testLabelData, W):
-    accuracyCount = 0
+    accuracyCount = 0.00
     for index,item in enumerate(testMatData):
         for indexw in range(0,3):
             result=np.dot(item,W[indexw])
             if(result<=0 and indexw==testLabelData[index]):accuracyCount+=1
             if(result>0 and indexw!=testLabelData[index]):accuracyCount+=1
-    return accuracyCount
+    return accuracyCount/(len(W)*len(testMatData))
 
 # 计算损失（未使用）
 def cost(testMatData,testLabelData,W):
@@ -85,7 +85,7 @@ def mscatter(x,y,ax=None, m=None, **kw):
     ax.legend()
     return sc
 
-# 查找对于单个data的最大距离超平面
+# 查找对于单个data的最大距离超平面bb
 def maxJBywx(W,data):
     maxIndex=0
     maxValue=np.dot(W[0],data)
@@ -121,6 +121,7 @@ fig = plt.figure(figsize = (12, 6))
 # 添加总标题，并设置文字大小
 plt.suptitle("multi_class_PLA", fontsize=20) 
 ax1=fig.add_subplot(122)
+plt.grid(True)
 ax1.set_xlabel('epoch')
 ax1.set_ylabel('BadPointCount')
  # 初始线的数据
@@ -139,7 +140,7 @@ plt.show()
 # 学习率
 a=0.1
 # 学习轮数
-epochs=10
+epochs=5
 epoch=1
 costs=[]
 costs.append(checkNotTrueRate(data,value,bestW))
@@ -218,9 +219,9 @@ y0 = (-resultWeight[0][0] * x- resultWeight[0][2])/(resultWeight[0][1])
 y1 = (-resultWeight[1][0] * x- resultWeight[1][2])/(resultWeight[1][1])
 y11=10000
 y22=-10000
-ax.fill_between(x,y0,y11,facecolor='b',alpha=0.3)
-ax.fill_between(x,y1,y22,facecolor='g',alpha=0.3)
-ax.fill_between(x,y0,y1,facecolor='k',alpha=0.3)
+ax.fill_between(x,y0,y11,where=y11>y1,facecolor='b',alpha=0.3)
+ax.fill_between(x,y1,y22,where=y22<y0,facecolor='g',alpha=0.3)
+ax.fill_between(x,y0,y1,where=y0<y1,facecolor='k',alpha=0.3)
 
 # 显示前关掉交互模式
 plt.ioff()
