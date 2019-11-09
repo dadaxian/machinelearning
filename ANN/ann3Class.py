@@ -1,5 +1,6 @@
 import numpy as np 
 import matplotlib.pyplot as plt
+import time
 
 path="D:\\fallingspace\\machinelearning\\data\\Iris\\"
 data_x= np.loadtxt(path+"iris_x.dat")
@@ -132,4 +133,5 @@ for j in range(fold_count):
 print("accuracy:", total/fold_count)
 # 显示前关掉交互模式
 plt.ioff()
+plt.savefig("D:\\fallingspace\\machinelearning\\ANN\\result\\ann3class"+(str)(time.time())+".png")
 plt.show()
