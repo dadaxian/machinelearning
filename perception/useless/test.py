@@ -21,16 +21,17 @@ import numpy as np
 
 # print(shuffleData(data,value))
 
-a = np.random.randint(0,10,size=[50,2])
-b=np.random.randint(11,20,size=[50,2])
+# a = np.random.randint(0,10,size=[50,2])
+# b=np.random.randint(11,20,size=[50,2])
 
-data=np.vstack((a,b))
+# data=np.vstack((a,b))
 
-value=[]
-for index,item in enumerate(a):
-    value.append(1)
-for index,item in enumerate(b):
-    value.append(-1)
-# print(value)
-for i in range(4):
-    print(i)
+# value=[]
+# for index,item in enumerate(a):
+#     value.append(1)
+# for index,item in enumerate(b):
+#     value.append(-1)
+# # print(value)
+# for i in range(4):
+#     print(i)
+print(np.mat(np.random.normal(size=(2, 7))))

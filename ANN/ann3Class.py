@@ -1,58 +1,84 @@
-import numpy as np
+import numpy as np 
 import matplotlib.pyplot as plt
 
- 
-learn_rate = 0.05
-output_size = 2
-hidden_size = 7
- 
-path="D:\\fallingspace\\machinelearning\\data\\ex4Data\\"
-data_x= np.loadtxt(path+"ex4x.dat")
-data_y= np.loadtxt(path+"ex4y.dat")
-# 正则化数据
-mean = data_x.mean(axis=0)
-variance = data_x.std(axis=0)
-data_x = (data_x-mean)/variance
-data_y = data_y.reshape(-1, 1)          # 拼接
-temp = np.ones(data_y.size)
-data_x = np.c_[data_x, temp]
- 
+path="D:\\fallingspace\\machinelearning\\data\\Iris\\"
+data_x= np.loadtxt(path+"iris_x.dat")
+data_y= np.loadtxt(path+"iris_y.dat")
+
+# 学习率
+learn_rate=0.05
+output_size=3
+hidden_size=7
+fold_count=5
+single_fold_count=(int)(data_y.size/output_size/fold_count)
+
+
+
+
+# region 方法定义
+# 归一化数据
+def normalizefeature(data):
+    x_norm = data
+    meam = np.mean(data, axis=0)
+    sigma = np.std(data, axis=0)
+    x_norm = (data - meam) / sigma
+    return x_norm
+
 # sigmoid函数
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
-y = np.zeros([data_y.size, output_size])
+# endregion
+
+
+
+# 预处理数据
+data_x=normalizefeature(data_x)
+# print(data_y)
+data_y=data_y.reshape(-1,1)
+# print(data_y)
+
+# 设置标准输出
+y=np.zeros([data_y.size,output_size])
 for i in range(data_y.size):
-    if data_y[i] == 0:
-        y[i][0] = 1
-    if data_y[i] == 1:
-        y[i][1] = 1
- 
-data_sets = list()
+    y[i][(int)(data_y[i][0])]=1
+
+
+data_sets=list()
 for i in range(data_y.size):
-    if i % 8 == 0 and i != 0:
-        data_sets.append(data_x[i-8:i, :])
+    if i % single_fold_count == 0 and i != 0:
+        data_sets.append(data_x[i-single_fold_count:i, :])
     if i == data_y.size-1:
-        data_sets.append(data_x[i-7:i+1, :])
- 
-positive_x = data_x[0:40, :]
-positive_label = y[0:40, :]
-negative_x = data_x[40:80, :]
-negative_label = y[40:80, :]
-total = 0
+        data_sets.append(data_x[i-single_fold_count-1:i+1, :])
+
+# print(single_fold_count)
+class1_x = data_x[0:50, :]
+class1_label = y[0:50, :]
+class2_x = data_x[50:100, :]
+class2_label = y[50:100, :]
+class3_x = data_x[100:150, :]
+class3_label = y[100:150, :]
+
+total=0
  # 关闭阻塞模式，打开交互模式
 plt.ion() 
 plt.show()
-for j in range(5):
-    x_ = np.r_[np.delete(positive_x, range(j*8, (j+1)*8), 0), np.delete(negative_x, range(j*8, (j+1)*8), 0)]
-    y_ = np.r_[np.delete(positive_label, range(j*8, (j+1)*8), 0), np.delete(negative_label, range(j*8, (j+1)*8), 0)]
+for j in range(fold_count):
+    
+    x_=np.delete(class1_x, range(j*single_fold_count, (j+1)*single_fold_count), 0)
+    x_=np.r_[x_,np.delete(class2_x, range(j*single_fold_count, (j+1)*single_fold_count), 0)]
+    x_=np.r_[x_,np.delete(class3_x, range(j*single_fold_count, (j+1)*single_fold_count), 0)]
+
+    y_ = np.delete(class1_label, range(j*single_fold_count, (j+1)*single_fold_count), 0)
+    y_ = np.r_[y_,np.delete(class2_label, range(j*single_fold_count, (j+1)*single_fold_count), 0)]
+    y_ = np.r_[y_,np.delete(class3_label, range(j*single_fold_count, (j+1)*single_fold_count), 0)]
  
-    test_x = np.r_[data_sets[j], data_sets[j+5]]
+    test_x = np.r_[data_sets[j], data_sets[j+fold_count]]
  
-    test_label = np.r_[data_y[j*8:(j+1)*8], data_y[(j+5)*8:(j+6)*8]]
+    test_label = np.r_[data_y[j*single_fold_count:(j+1)*single_fold_count], data_y[(j+fold_count)*single_fold_count:(j+fold_count+1)*single_fold_count]]
     # data_x = np.mat(data_x)
     data_x = np.mat(x_)
-    temp = np.ones(data_y.size-16)
+    temp = np.ones(data_y.size-single_fold_count*output_size)
     weight_input = np.mat(np.random.normal(size=(data_x.shape[1], hidden_size)))
     weight_hidden = np.mat(np.random.normal(size=(hidden_size+1, output_size)))
     steps = 600
@@ -102,8 +128,8 @@ for j in range(5):
             count = count+1
     print("test accuracy", count/test_label.size)
     total = total+count/test_label.size
-    
-print("accuracy:", total/5)
+
+print("accuracy:", total/fold_count)
 # 显示前关掉交互模式
 plt.ioff()
 plt.show()

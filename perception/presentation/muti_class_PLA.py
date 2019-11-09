@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-path="D:\\fallingspace\\perceptron\\data\\Iris\\"
+path="D:\\fallingspace\\machinelearning\\data\\Iris\\"
 data= np.loadtxt(path+"iris_x.dat")
 value= np.loadtxt(path+"iris_y.dat")
 
@@ -140,7 +140,7 @@ plt.show()
 # 学习率
 a=0.1
 # 学习轮数
-epochs=5
+epochs=10
 epoch=1
 costs=[]
 costs.append(checkNotTrueRate(data,value,bestW))
@@ -219,9 +219,9 @@ y0 = (-resultWeight[0][0] * x- resultWeight[0][2])/(resultWeight[0][1])
 y1 = (-resultWeight[1][0] * x- resultWeight[1][2])/(resultWeight[1][1])
 y11=10000
 y22=-10000
-ax.fill_between(x,y0,y11,where=y11>y1,facecolor='b',alpha=0.3)
-ax.fill_between(x,y1,y22,where=y22<y0,facecolor='g',alpha=0.3)
-ax.fill_between(x,y0,y1,where=y0<y1,facecolor='k',alpha=0.3)
+ax.fill_between(x,y0,y11,facecolor='b',alpha=0.3)
+ax.fill_between(x,y1,y22,facecolor='g',alpha=0.3)
+ax.fill_between(x,y0,y1,facecolor='k',alpha=0.3)
 
 # 显示前关掉交互模式
 plt.ioff()
