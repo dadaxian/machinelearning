@@ -140,7 +140,7 @@ plt.show()
 # 学习率
 a=0.1
 # 学习轮数
-epochs=10
+epochs=60
 epoch=1
 costs=[]
 costs.append(checkNotTrueRate(data,value,bestW))
