@@ -79,6 +79,7 @@
 > > 3. dict.fromkeys(seq[, val])
 > > 创建一个新字典，以序列 seq 中元素做字典的键，val 为字典所有键对应的初始值
 > > 4. dict.get(key, default=None)
+> > dic["a"]=dic.get("a",0)+1 这里赋值不能像C++里面那样，C++里如果原来没有这个键，就默认这个键对应的值为0，但这样在Python里会报错
 > > 返回指定键的值，如果值不在字典中返回default值（根据key取出值，若key不存在，返回默认值）
 > > 5. dict.has_key(key)
 > > 如果键在字典dict里返回true，否则返回false

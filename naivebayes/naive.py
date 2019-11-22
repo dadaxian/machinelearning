@@ -88,9 +88,9 @@ if __name__ == "__main__":
     x = naive()
     x.train()
     x.dev()
-    # x.test(filename)
+    # x.test(r"D:\\fallingspace\\machinelearning\data\suda\develop_negative_review.txt")
     time_end=time.time()
-    print('totally cost',time_end-time_start)
+    print('totally time cost',time_end-time_start)
 
     
 
